@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebook/view/Utils/alert%20dialogs.dart';
 import 'package:ebook/view/Utils/app%20color.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../Login/login screen.dart';
-import '../Login/textfield wedget.dart';
+import '../../Wedgets/textfield wedget.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,12 +21,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   TextEditingController phonecontroller = TextEditingController();
 
-  TextEditingController anotherphonecontroller = TextEditingController();
-
   TextEditingController namecontroller = TextEditingController();
 
-
-  TextEditingController addresscontroller = TextEditingController();
 
   bool obsecure = true ;
 
@@ -87,38 +86,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       height: MediaQuery.of(context).size.height * .03,
                     ),
                     Text(
-                      'Your Address',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,color: Colors.white),
-                    ),
-                    TextFieldWedget(
-                        hint: 'Ex: nasr city in cairo',
-                        cotroler: addresscontroller,
-                        Validfunction: (value) {
-                          if (value!.isEmpty || value.trim().isEmpty) {
-                            return "address can't be empty";
-                          }
-                        }),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * .03,
-                    ),
-                    Text(
                       'phone',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,color: Colors.white),
                     ),
                     TextFieldWedget(
                         hint: 'phone num',
                         cotroler: phonecontroller,
-                        Validfunction: (value) {
-                          if (value!.isEmpty || value.trim().isEmpty) {
-                            return "phone can't be empty";
-                          }
-                        }),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * .03,
-                    ),
-                    TextFieldWedget(
-                        hint: 'another phone num',
-                        cotroler: anotherphonecontroller,
                         Validfunction: (value) {
                           if (value!.isEmpty || value.trim().isEmpty) {
                             return "phone can't be empty";
@@ -164,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         register();
                         //  Navigator.pushReplacementNamed(context, Selectscreen.selectname);
                       },
-                        child: Text('Sign In',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 26,color: Colors.blue),),
+                        child: Text('Sign Up',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 26,color: Colors.blue),),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
@@ -176,7 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     Row(
                       children: [
-                        Text("already have an account  ",style: TextStyle(fontSize: 20,color: Colors.white),textAlign:TextAlign.center),
+                        Text("            already have an account  ",style: TextStyle(fontSize: 20,color: Colors.white),textAlign:TextAlign.center),
                         InkWell(
                             onTap: (){
                                Navigator.pushReplacementNamed(context, LoginScreen.loginname);
@@ -198,10 +171,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void register() async {
     if (formkey.currentState?.validate()==true){
-      try{
+      showLoading(context);
+      try {
+        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email:emailcontroller.text ,
+          password: passwordcontroller.text,
+        );
+        hideLoading(context);
+        showsucsses(context, 'account maked successfly');
+        await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
+          'name': namecontroller.text,
+          'phone_number': phonecontroller.text,
+        });
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          print('The password provided is too weak.');
+          hideLoading(context);
+          showmsg(context, 'The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          print('The account already exists for that email.');
+          hideLoading(context);
+          showmsg(context, 'The account already exists for that email.');
+        }
+      } catch (e) {
+        print(e);
       }
-      catch(e){
-      }
+
     }
   }
+
 }
+
+// Map<String, dynamic> userInfo = await getUserInfo(FirebaseAuth.instance.currentUser!.uid);
+// print(userInfo);
+
+// Future<Map<String, dynamic>> getUserInfo(String uid) async {
+//   DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+//   return snapshot.data() ?? {};
+// }

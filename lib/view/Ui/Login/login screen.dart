@@ -1,9 +1,10 @@
-
-import 'package:ebook/view/Ui/Login/textfield%20wedget.dart';
+import 'package:ebook/view/Wedgets/textfield%20wedget.dart';
+import 'package:ebook/view/Utils/alert%20dialogs.dart';
 import 'package:ebook/view/Utils/app%20color.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../Register/register screen.dart';
+import '../e book screen/home screen.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20,color: Colors.white),
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * .05,
+                    height: MediaQuery.of(context).size.height * .1,
                   ),
                   Text(
                     'e-mail address',
@@ -54,6 +55,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       Validfunction: (value) {
                         if (value!.isEmpty || value.trim().isEmpty) {
                           return "phone can't be empty";
+                        }
+                        bool emailValid = RegExp(
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(value);
+                        if (!emailValid) {
+                          return 'please enter valid e-mail';
                         }
                       }),
                   SizedBox(
@@ -94,7 +101,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     height:MediaQuery.sizeOf(context).width*0.05 ,
                     child: ElevatedButton(onPressed: (){
                       login();
-                     // Navigator.pushReplacementNamed(context, MasterScreen.masterScreenname);
                     },
                       child: Text('Login In',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 26,color: Colors.blue),),
                       style: ElevatedButton.styleFrom(
@@ -104,11 +110,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: 35,
+                    height: 50,
                   ),
                   Row(
                     children: [
-                      Text("     Don't have account  ",style: TextStyle(fontSize: 20,color: Colors.white),textAlign: TextAlign.center),
+                      Text("                Don't have account  ",style: TextStyle(fontSize: 20,color: Colors.white),textAlign: TextAlign.center),
                       InkWell(
                           onTap: (){
                             Navigator.pushReplacementNamed(context, RegisterScreen.registername);
@@ -127,8 +133,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void login() async {
     if (formkey.currentState?.validate()==true){
-      try {}
-      catch(e){
+      showLoading(context);
+      try {
+        final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: emailcontroller.text,
+            password: passwordcontroller.text
+        );
+        hideLoading(context);
+        print(credential.user!.email);
+        Navigator.pushReplacementNamed(context, HomeScreen.HomeScreenname);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          print('No user found for that email.');
+        } else if (e.code == 'wrong-password') {
+          print('Wrong password provided for that user.');
+        }
+        hideLoading(context);
+        showmsg(context, 'e-mail or password is wrong.');
       }
     }
   }
