@@ -7,13 +7,15 @@ import 'package:flutter/material.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(
-        apiKey: "AIzaSyBOGCTXZaxTlUw5iykxg2Djyi-ZsES3mpY",
-        projectId: "ebook-82d79",
-        messagingSenderId: "511766617852",
-        appId: "1:511766617852:web:380b553761687a322f4179",
-
-    )
+      options: FirebaseOptions(
+          apiKey: "AIzaSyBOGCTXZaxTlUw5iykxg2Djyi-ZsES3mpY",
+          authDomain: "ebook-82d79.firebaseapp.com",
+          projectId: "ebook-82d79",
+          storageBucket: "ebook-82d79.appspot.com",
+          messagingSenderId: "511766617852",
+          appId: "1:511766617852:web:380b553761687a322f4179",
+          measurementId: "G-4LK6748SMS"
+      )
   );
   runApp(const MyApp());
 }
