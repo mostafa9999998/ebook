@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
                             crossAxisCount: crossAxisCount,
                             crossAxisSpacing: 8.0,
                             mainAxisSpacing: 8.0,
-                            childAspectRatio: .8,
+                            childAspectRatio: .78,
                           ),
                           itemBuilder: (context, index) {
                             return BookStyle(book: snapshot.data![index],) ;
