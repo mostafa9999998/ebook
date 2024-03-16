@@ -1,8 +1,9 @@
+import 'package:ebook/data/modules/Book.dart';
 import 'package:flutter/material.dart';
 
 class BookStyle extends StatelessWidget {
-  const BookStyle({super.key});
-
+   BookStyle({super.key, required this.book});
+   Book book ;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,20 +20,20 @@ class BookStyle extends StatelessWidget {
             height: MediaQuery.of(context).size.height*.246,
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/Screenshot .png'),
+                    image: NetworkImage(book.imageUrl!),
                     fit: BoxFit.fill
                 )
             ),
           ),
           SizedBox(height: MediaQuery.of(context).size.height*.04,),
-          Text('Title',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+          Text(book.title!,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
           SizedBox(height: MediaQuery.of(context).size.height*.025,),
-          Text('category',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+          Text(book.category!,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
           SizedBox(height: MediaQuery.of(context).size.height*.025,),
           Row(
             children: [
               Spacer(),
-              Text('Author',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+              Text(book.Author!,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
             ],
           )
         ],

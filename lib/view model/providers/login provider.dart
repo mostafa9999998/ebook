@@ -1,5 +1,4 @@
 import 'package:ebook/data/firebase%20utiles/firebase%20utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../view/Ui/e book screen/home screen.dart';
 import '../../view/Utils/alert dialogs.dart';
